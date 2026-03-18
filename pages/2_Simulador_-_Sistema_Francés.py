@@ -2,23 +2,23 @@ import datetime as dt
 import streamlit as st
 
 from utils.amort_francesa import generate_french_schedule
-from utils.exports import df_to_csv_bytes, df_to_excel_bytes
+from utils.exports import df_to_excel_bytes
 from utils.layout import firma_sidebar
 
-# Firma global en sidebar
+# Firma en la barra lateral
 firma_sidebar()
 
-# Persistencia para que no se "reinicie" la vista al exportar
+# Estado de la tabla generada
 if "df_francesa" not in st.session_state:
     st.session_state.df_francesa = None
 
-# Guardar parámetros usados para generar la tabla (para resetear si cambian inputs)
+# Parámetros usados para generar la tabla
 if "params_francesa" not in st.session_state:
     st.session_state.params_francesa = None
 
 
 def format_es(n: float, decimals: int = 2) -> str:
-    """Formato 1.234.567,89 para UI."""
+    """Formato 1.234.567,89 para la interfaz."""
     s = f"{n:,.{decimals}f}"
     s = s.replace(",", "X")
     s = s.replace(".", ",")
@@ -29,19 +29,39 @@ def format_es(n: float, decimals: int = 2) -> str:
 st.title("Generar - Tabla Francesa")
 st.caption("**Sistema Francés:** las cuotas son fijas")
 
-st.info("Configura los valores y haz clic en **Generar tabla** para ver el resumen y la tabla de amortización")
+st.info(
+    "Configura los valores y haz clic en **Generar tabla** para ver el resumen y la tabla de amortización"
+)
 
 st.divider()
 
 col1, col2 = st.columns(2)
 
 with col1:
-    monto = st.number_input("Capital solicitado", min_value=0.0, value=100000.0, step=100.0)
-    plazo = st.number_input("Plazo (meses)", min_value=1, value=120, step=1)
-    fecha_primer_pago = st.date_input("Fecha del primer pago", value=dt.date.today())
+    monto = st.number_input(
+        "Capital solicitado",
+        min_value=0.0,
+        value=100000.0,
+        step=100.0,
+    )
+    plazo = st.number_input(
+        "Plazo (meses)",
+        min_value=1,
+        value=120,
+        step=1,
+    )
+    fecha_primer_pago = st.date_input(
+        "Fecha del primer pago",
+        value=dt.date.today(),
+    )
 
 with col2:
-    tasa_anual = st.number_input("Tasa nominal anual (%)", min_value=0.0, value=10.0, step=0.1)
+    tasa_anual = st.number_input(
+        "Tasa nominal anual (%)",
+        min_value=0.0,
+        value=10.0,
+        step=0.1,
+    )
     cargos_fijos = st.number_input(
         "Cargos fijos mensuales",
         min_value=0.0,
@@ -49,9 +69,12 @@ with col2:
         step=1.0,
         help="Ejemplo: seguro de desgravamen, seguro de incendios u otros cargos fijos. No afectan el saldo del préstamo.",
     )
-    fecha_corte = st.date_input("Fecha de corte", value=dt.date.today())
+    fecha_corte = st.date_input(
+        "Fecha de corte",
+        value=dt.date.today(),
+    )
 
-# Snapshot de inputs actuales
+# Parámetros actuales
 current_params = (
     float(monto),
     int(plazo),
@@ -61,8 +84,11 @@ current_params = (
     str(fecha_corte),
 )
 
-# Si cambian inputs después de haber generado tabla, resetea
-if st.session_state.params_francesa is not None and current_params != st.session_state.params_francesa:
+# Reinicia la tabla si cambian los inputs
+if (
+    st.session_state.params_francesa is not None
+    and current_params != st.session_state.params_francesa
+):
     st.session_state.df_francesa = None
 
 st.divider()
@@ -81,8 +107,7 @@ if st.button("Generar tabla"):
 df = st.session_state.df_francesa
 
 if df is not None:
-        
-    # --- Resumen dinámico según fecha de corte ---
+    # Resumen según la fecha de corte
     total_intereses = float(df["pago_interes"].sum())
     total_cargos_fijos = float(df["pago_cargos_fijos"].sum())
 
@@ -116,17 +141,15 @@ if df is not None:
     st.caption("*Se calcula hasta la fecha de corte seleccionada.")
     st.divider()
 
-    # --- Tabla ---
+    # Tabla de amortización
     st.subheader("Tabla de amortización (Francesa)")
 
     df_base = df.copy()
 
-    # Asegurar que fecha_pago sea tipo date (por seguridad)
     df_base["fecha_pago"] = df_base["fecha_pago"].apply(
         lambda x: x.date() if isinstance(x, dt.datetime) else x
     )
 
-    # Reordenar para que fecha_pago vaya después de cuota
     cols = list(df_base.columns)
     if "cuota" in cols and "fecha_pago" in cols:
         cols.remove("fecha_pago")
@@ -134,7 +157,6 @@ if df is not None:
         cols.insert(idx, "fecha_pago")
         df_base = df_base[cols]
 
-    # Versión formateada solo para UI
     df_display = df_base.copy()
     df_display["fecha_pago"] = df_display["fecha_pago"].astype(str)
 
