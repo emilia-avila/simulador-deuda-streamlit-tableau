@@ -1,21 +1,17 @@
 import io
-import datetime as dt
 import pandas as pd
 import streamlit as st
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
+from reportlab.lib.units import cm
+from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer
+
 from utils.layout import firma_sidebar
 
-# Firma global en sidebar
+# Firma en la barra lateral
 firma_sidebar()
 
-# PDF
-from reportlab.lib.pagesizes import A4
-from reportlab.lib.units import cm
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.lib import colors
-
-
-# ---------------- SINGLE SOURCE OF TRUTH ----------------
+# Definiciones del glosario
 CONCEPTOS = [
     {
         "Concepto": "Tabla de Amortización",
@@ -72,6 +68,7 @@ def conceptos_df():
     return pd.DataFrame(CONCEPTOS, columns=["Concepto", "Definición"])
 
 
+# Genera el PDF del glosario
 def build_pdf() -> bytes:
     buffer = io.BytesIO()
 
@@ -87,33 +84,26 @@ def build_pdf() -> bytes:
 
     styles = getSampleStyleSheet()
 
-    # ✅ Título más pequeño (SOLO CAMBIO)
     title_style = ParagraphStyle(
-        name="CustomTitle",
+        name="TituloPersonalizado",
         parent=styles["Title"],
-        fontSize=14,     # antes: styles["Title"] (más grande)
+        fontSize=14,
         spaceAfter=0,
     )
 
-    elements = []
-
-    # Título
-    elements.append(Paragraph("Glosario – Simulador de Deuda", title_style))
-    elements.append(Spacer(1, 12))
-
-    # Nombre
-    elements.append(
+    elements = [
+        Paragraph("Glosario – Simulador de Deuda", title_style),
+        Spacer(1, 12),
         Paragraph(
-        'Elaborado por: '
-        '<link href="https://www.linkedin.com/in/emilia-avila-vasconez">'
-        '<u><font color="blue">Emilia Ávila</font></u>'
-        '</link>',
-        styles["Normal"]
-    )
-    )
-    elements.append(Spacer(1, 30))
+            'Elaborado por: '
+            '<link href="https://www.linkedin.com/in/emilia-avila-vasconez">'
+            '<u><font color="blue">Emilia Ávila</font></u>'
+            "</link>",
+            styles["Normal"],
+        ),
+        Spacer(1, 30),
+    ]
 
-    # Glosario en texto
     for item in CONCEPTOS:
         elements.append(Paragraph(f"<b>{item['Concepto']}</b>", styles["Normal"]))
         elements.append(Spacer(1, 4))
@@ -125,35 +115,35 @@ def build_pdf() -> bytes:
     return buffer.read()
 
 
-# ---------------- UI ----------------
-
+# Interfaz principal
 st.title("Glosario")
 st.caption(
     "Definiciones clave utilizadas en el Simulador de Deuda y Dashboard de Seguimiento"
 )
 
-st.info("Revisa las definiciones aquí o descargar el glosario en PDF")
+st.info("Revisa las definiciones aquí o descarga el glosario en PDF")
 
 st.divider()
 
-# 🔹 GLOSARIO EN TEXTO
+# Glosario en pantalla
 for item in CONCEPTOS:
     st.markdown(
         f"""
-        <p style="margin-bottom:20px;">
-            <span style="font-size:14px; font-weight:400; color:white;">
+        <div style="margin-bottom: 10px;">
+            <div style="font-size: 14px; font-weight: 500; margin-bottom: 3px;">
                 {item['Concepto']}
-            </span><br>
-            <span style="color:#A6A6A6; font-size:14px;">
+            </div>
+            <div style="font-size: 14px; line-height: 1.7; margin-bottom: 25px; color: #8A8A8A;">
                 {item['Definición']}
-            </span>
-        </p>
+            </div>
+        </div>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
 st.divider()
 
+# Botón de descarga del PDF
 pdf_bytes = build_pdf()
 
 st.download_button(
