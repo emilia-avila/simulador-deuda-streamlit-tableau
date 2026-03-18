@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 import datetime as dt
 import pandas as pd
 
@@ -16,25 +17,20 @@ def generate_german_schedule(
     cutoff_date: dt.date,
 ) -> pd.DataFrame:
     """
-    Genera tabla alemana con:
-    - pago_capital fijo = principal / n
-    - tasa mensual = (tasa anual nominal) / 12
-    - cuota_financiera variable (capital fijo + interés)
-    - cargos fijos mensuales (no afectan saldo)
-    - estado según fecha de corte
-    Esquema BI: incluye fecha_pago como Date.
+    Genera la tabla de amortización del sistema alemán con capital fijo,
+    cargos fijos y estado de la cuota según la fecha de corte.
     """
     principal = float(principal)
     fixed_monthly_charges = float(fixed_monthly_charges)
     n_months = int(n_months)
 
     annual_rate = float(annual_rate_percent) / 100.0
-    r_m = annual_rate / 12.0  # Siempre nominal ÷ 12
+    r_m = annual_rate / 12.0
 
     rows = []
     saldo = principal
 
-    # Capital fijo mensual (sistema alemán)
+    # Capital fijo mensual
     pago_capital_fijo = principal / n_months if n_months > 0 else 0.0
 
     for k in range(1, n_months + 1):
@@ -42,17 +38,14 @@ def generate_german_schedule(
 
         saldo_inicial = saldo
         pago_interes = saldo_inicial * r_m
-
         pago_capital = pago_capital_fijo
 
-        # Ajuste por redondeo en el último periodo: cerrar saldo a 0 exacto
+        # Ajusta el último periodo para cerrar el saldo en cero
         if k == n_months:
             pago_capital = saldo_inicial
 
         cuota_financiera = pago_capital + pago_interes
         saldo_final = saldo_inicial - pago_capital
-
-        # Estado según fecha de corte (más robusto que anio/mes/aniomes)
         estado = "CANCELADO" if fecha_pago <= cutoff_date else "POR VENCER"
 
         pago_cargos_fijos = fixed_monthly_charges
@@ -61,7 +54,7 @@ def generate_german_schedule(
         rows.append(
             {
                 "cuota": k,
-                "fecha_pago": fecha_pago,  # ✅ columna Date para Tableau
+                "fecha_pago": fecha_pago,
                 "saldo_inicial": saldo_inicial,
                 "pago_capital": pago_capital,
                 "pago_interes": pago_interes,
@@ -77,7 +70,7 @@ def generate_german_schedule(
 
     df = pd.DataFrame(rows)
 
-    # Mantener numérico para exportación / BI (sin formatear como texto)
+    # Mantiene columnas numéricas para exportación y análisis
     money_cols = [
         "saldo_inicial",
         "pago_capital",
@@ -88,10 +81,7 @@ def generate_german_schedule(
         "cuota_total",
     ]
     df[money_cols] = df[money_cols].astype(float)
-
     df["cuota"] = df["cuota"].astype(int)
-
-    # Asegurar que fecha_pago sea Date (no string)
     df["fecha_pago"] = pd.to_datetime(df["fecha_pago"]).dt.date
 
     return df
