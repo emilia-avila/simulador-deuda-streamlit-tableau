@@ -1,15 +1,17 @@
 import streamlit as st
+
 from utils.layout import firma_sidebar
 
-# Firma global en sidebar
+# Firma en la barra lateral
 firma_sidebar()
 
+
 def format_es(n: float, decimals: int = 2) -> str:
-    """Formato 1.234.567,89 para UI."""
-    s = f"{n:,.{decimals}f}"      # 1,234,567.89
-    s = s.replace(",", "X")       # 1X234X567.89
-    s = s.replace(".", ",")       # 1X234X567,89
-    s = s.replace("X", ".")       # 1.234.567,89
+    """Formato 1.234.567,89 para la interfaz."""
+    s = f"{n:,.{decimals}f}"
+    s = s.replace(",", "X")
+    s = s.replace(".", ",")
+    s = s.replace("X", ".")
     return s
 
 
@@ -24,35 +26,28 @@ def _pmt(principal: float, r_m: float, n: int) -> float:
 
 def solve_rate_french(principal: float, cuota_financiera: float, n: int) -> float:
     """
-    Encuentra la tasa mensual r que hace que PMT(principal, r, n) = cuota_financiera.
-    Método: búsqueda binaria (estable y sin dependencias externas).
-    Retorna r mensual (decimal), ej: 0.005 = 0.5% mensual
+    Encuentra la tasa mensual que cumple:
+    PMT(principal, r, n) = cuota_financiera.
     """
     if principal <= 0 or n <= 0 or cuota_financiera <= 0:
         return 0.0
 
-    # Si la cuota es menor que principal/n, no existe tasa >= 0 que lo cumpla
     min_cuota = principal / n
     if cuota_financiera < min_cuota:
         raise ValueError(
             f"La cuota es demasiado baja. Mínimo teórico (sin interés) = {min_cuota:.6f}"
         )
 
-    # Cotas para la tasa mensual:
-    # low = 0, high = 100% mensual (absurdamente alto pero sirve como techo)
     low = 0.0
     high = 1.0
 
-    # Asegurar que high sea suficiente para que PMT(high) >= cuota
-    # (aumentar si fuera necesario)
     for _ in range(60):
         if _pmt(principal, high, n) >= cuota_financiera:
             break
         high *= 2
-        if high > 10:  # 1000% mensual ya es demasiado
+        if high > 10:
             break
 
-    # Búsqueda binaria
     for _ in range(80):
         mid = (low + high) / 2.0
         p = _pmt(principal, mid, n)
@@ -78,9 +73,20 @@ sistema = st.selectbox(
 )
 
 col1, col2 = st.columns(2)
+
 with col1:
-    principal = st.number_input("Capital solicitado", min_value=0.0, value=100000.0, step=100.0)
-    n_months = st.number_input("Plazo (meses)", min_value=1, value=120, step=1)
+    principal = st.number_input(
+        "Capital solicitado",
+        min_value=0.0,
+        value=100000.0,
+        step=100.0,
+    )
+    n_months = st.number_input(
+        "Plazo (meses)",
+        min_value=1,
+        value=120,
+        step=1,
+    )
 
 with col2:
     cuota_mes1 = st.number_input(
@@ -109,7 +115,7 @@ if st.button("Calcular Tasa"):
             st.stop()
 
         if sistema.startswith("Sistema Alemán"):
-            # Alemán: cuota_1 = P/n + P*r  => r = (cuota_1 - P/n) / P
+            # Sistema alemán: calcula la tasa a partir de la cuota del primer mes
             abono_capital = principal / n
             r_m = (cuota - abono_capital) / principal
 
@@ -120,13 +126,9 @@ if st.button("Calcular Tasa"):
                 )
                 st.stop()
 
-            # Para mostrar un mini chequeo:
-            cuota_reconstruida = abono_capital + principal * r_m
-
         else:
-            # Francés: resolver r_m tal que PMT(P, r_m, n) = cuota
+            # Sistema francés: resuelve la tasa que reproduce la cuota
             r_m = solve_rate_french(principal, cuota, n)
-            cuota_reconstruida = _pmt(principal, r_m, n)
 
         tasa_mensual_pct = r_m * 100.0
         tasa_nominal_anual_pct = tasa_mensual_pct * 12.0
@@ -138,7 +140,6 @@ if st.button("Calcular Tasa"):
         c2.metric("Tasa nominal anual", f"{format_es(tasa_nominal_anual_pct, 4)} %")
 
         st.caption("Tasa nominal anual = tasa nominal mensual × 12")
-
 
     except ValueError as e:
         st.error(f"No se pudo calcular la tasa: {e}")
