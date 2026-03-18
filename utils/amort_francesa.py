@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 import datetime as dt
 import pandas as pd
 
@@ -25,18 +26,15 @@ def generate_french_schedule(
     cutoff_date: dt.date,
 ) -> pd.DataFrame:
     """
-    Genera tabla francesa con:
-    - tasa mensual = (tasa anual nominal) / 12
-    - cargos fijos mensuales (no afectan saldo)
-    - estado según fecha de corte
-    Columnas base para BI: incluye fecha_pago como Date.
+    Genera la tabla de amortización del sistema francés con cargos fijos
+    y estado de la cuota según la fecha de corte.
     """
     principal = float(principal)
     fixed_monthly_charges = float(fixed_monthly_charges)
     n_months = int(n_months)
 
     annual_rate = float(annual_rate_percent) / 100.0
-    r_m = annual_rate / 12.0  # Siempre nominal ÷ 12
+    r_m = annual_rate / 12.0
 
     cuota_financiera = _pmt(principal, r_m, n_months)
 
@@ -50,14 +48,12 @@ def generate_french_schedule(
         pago_interes = capital_inicial * r_m
         pago_capital = cuota_financiera - pago_interes
 
-        # Ajuste por redondeo en el último periodo: cerrar el saldo a 0 exacto
+        # Ajusta el último periodo para cerrar el saldo en cero
         if k == n_months:
             pago_capital = capital_inicial
             cuota_financiera = pago_interes + pago_capital
 
         capital_reducido = capital_inicial - pago_capital
-
-        # Estado según fecha de corte (más robusto que anio/mes/aniomes)
         estado = "CANCELADO" if fecha_pago <= cutoff_date else "POR VENCER"
 
         pago_cargos_fijos = fixed_monthly_charges
@@ -66,7 +62,7 @@ def generate_french_schedule(
         rows.append(
             {
                 "cuota": k,
-                "fecha_pago": fecha_pago,  # ✅ columna Date para Tableau
+                "fecha_pago": fecha_pago,
                 "capital_inicial": capital_inicial,
                 "pago_capital": pago_capital,
                 "pago_interes": pago_interes,
@@ -82,7 +78,7 @@ def generate_french_schedule(
 
     df = pd.DataFrame(rows)
 
-    # Mantener numérico para exportación / BI (sin formatear como texto)
+    # Mantiene columnas numéricas para exportación y análisis
     money_cols = [
         "capital_inicial",
         "pago_capital",
@@ -93,10 +89,7 @@ def generate_french_schedule(
         "cuota_total",
     ]
     df[money_cols] = df[money_cols].astype(float)
-
     df["cuota"] = df["cuota"].astype(int)
-
-    # Asegurar que fecha_pago sea Date (no string)
     df["fecha_pago"] = pd.to_datetime(df["fecha_pago"]).dt.date
 
     return df
