@@ -67,15 +67,7 @@ GUIA_TABLEAU = [
         ),
     },
     {
-        "Paso": "3) Regístrate gratuitamente en Tableau Public",
-        "Detalle": (
-            'Ingresa a <a href="https://public.tableau.com" target="_blank" '
-            'style="color:#4EA1FF; text-decoration:none;">Tableau Public</a> '
-            "y crea una cuenta gratuita."
-        ),
-    },
-    {
-        "Paso": "4) Descarga e instala Tableau Public (Desktop app)",
+        "Paso": "3) Regístrate, descarga e instala Tableau Public (es la versión gratuita para escritorio)",
         "Detalle": (
             'Ingresa a <a href="https://www.tableau.com/products/public/download" target="_blank" '
             'style="color:#4EA1FF; text-decoration:none;">Descargar Tableau Public</a> '
@@ -83,28 +75,31 @@ GUIA_TABLEAU = [
         ),
     },
     {
-        "Paso": "5) Abre la plantilla (.twbx) en Tableau Public (Desktop app)",
+        "Paso": "4) Abre la plantilla (.twbx) en Tableau Public (Desktop app)",
         "Detalle": (
-            "Abre la aplicación de Tableau Public en tu computador, ve a 'Archivo' > 'Abrir' "
-            "y selecciona la plantilla que descargaste en el paso 2."
+            "Abre la aplicación de Tableau Public en tu computador. En la esquina superior izquierda, ve a 'Archivo' > 'Abrir' "
+            "y selecciona la plantilla que descargaste en el paso 2 (Seguimiento_Deuda.twbx)."
         ),
     },
     {
-        "Paso": "6) Reemplaza la fuente de datos por tu tabla de amortización",
+        "Paso": "5) Actualiza la fuente de datos con tu tabla de amortización",
         "Detalle": (
-            "Ve a la pestaña 'Data Source' en la esquina inferior izquierda. "
-            "En la sección 'Conexiones', despliega el menú de opciones del archivo conectado, "
-            "da clic en 'Editar Conexión' y selecciona la tabla de amortización que descargaste "
-            "en el paso 1. Guarda los cambios en 'Archivo' > 'Guardar'."
+            "En la pestaña Seguimiento Deuda, ve a 'Datos' > 'Tabla de Amortización' > 'Editar fuente de datos...' "
+            "y selecciona la tabla de amortización que descargaste en el paso 1. "
+            "Realiza el mismo proceso con 'Pie Chart': ve a 'Datos' > 'Pie Chart' > 'Editar fuente de datos...' "
+            "y selecciona la tabla de amortización que descargaste en el paso 1.\n\n"
+            "Guarda los cambios en 'Archivo' > 'Guardar'.\n\n"
+            "Utiliza el modo presentación para ver el tablero en pantalla completa."
         ),
     },
     {
-        "Paso": "7) Seguimiento de la deuda",
+        "Paso": "Nota:",
         "Detalle": (
-            "El dashboard se encuentra actualizado y está listo para hacer el seguimiento "
-            "de tu deuda hasta el final del periodo. Si tu deuda cambia, solo genera una nueva "
-            "tabla en el simulador y actualiza el archivo las veces que necesites. Utiliza el "
-            "modo presentación en la pestaña 'Seguimiento Deuda' para ver el tablero en pantalla completa."
+            "El dashboard se encuentra actualizado y está listo para utilizar. "
+            "Si tu deuda cambia, solo genera una nueva tabla en el simulador y actualiza el archivo las veces que necesites: "
+            "ve a la pestaña 'Fuente de Datos' y para cada fuente ('Tabla de Amortización' y 'Pie Chart') despliega el menú de "
+            "opciones en la sección 'Conexiones', da clic en 'Editar Conexión' y selecciona la nueva tabla "
+            "de amortización."
         ),
     },
 ]
@@ -170,12 +165,12 @@ def build_pdf() -> bytes:
     buffer.seek(0)
     return buffer.read()
 
-#st.markdown("##### 📘 Conexión en 7 pasos")
+#st.markdown("##### 📘 Conexión en 5 pasos")
 
 st.markdown(
     """
     <div style="font-size: 20px; font-weight: 600; margin-bottom: 28px;">
-        📘 Conexión en 7 pasos
+        📘 Conexión en 5 pasos
     </div>
     """,
     unsafe_allow_html=True,
