@@ -62,7 +62,7 @@ GUIA_TABLEAU = [
     {
         "Paso": "2) Descarga la plantilla de Tableau (.twbx)",
         "Detalle": (
-            "Descarga la plantilla .twbx que encontrarás al final de esta sección. "
+            "Descarga la plantilla .twbx que encontrarás al final de esta sección.\n\n"
             "Esta plantilla de Tableau ya contiene el diseño del dashboard y está lista para conectarse a tu tabla de amortización del paso 1."
         ),
     },
