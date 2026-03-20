@@ -94,7 +94,8 @@ with col2:
         min_value=0.0,
         value=1322.0,
         step=1.0,
-        help="No se incluye seguros (desgravamen/incendios) ni cargos administrativos. Solo capital + interés.",
+        help="**Solo capital + interés** \n\n"\
+        "No se incluye seguros (desgravamen/incendios) ni cargos administrativos",
     )
 
 st.info(
