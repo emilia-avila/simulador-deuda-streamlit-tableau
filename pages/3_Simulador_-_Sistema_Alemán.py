@@ -68,11 +68,12 @@ with col2:
         min_value=0.0,
         value=0.0,
         step=1.0,
-        help="Ejemplo: seguro de desgravamen, seguro de incendios u otros cargos fijos. No afectan el saldo del préstamo.",
+        help="Seguro de desgravamen, seguro de incendios u otros cargos fijos. No afectan el saldo del préstamo.",
     )
     fecha_corte = st.date_input(
         "Fecha de corte",
         value=dt.date.today(),
+        help="Hasta esta fecha se consideran pagadas las cuotas; las posteriores se muestran como saldo pendiente.",
     )
 
 # Parámetros actuales
