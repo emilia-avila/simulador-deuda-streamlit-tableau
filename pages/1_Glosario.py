@@ -43,7 +43,7 @@ CONCEPTOS = [
     },
     {
         "Concepto": "Fecha de Corte",
-        "Definición": "Fecha utilizada para determinar qué cuotas están canceladas y cuáles están por vencer.",
+        "Definición": "Hasta esta fecha se consideran pagadas las cuotas; las posteriores se muestran como saldo pendiente.",
     },
     {
         "Concepto": "Deuda Total",
