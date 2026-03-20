@@ -77,28 +77,31 @@ GUIA_TABLEAU = [
     {
         "Paso": "4) Abre la plantilla (.twbx) en Tableau Public (Desktop app)",
         "Detalle": (
-            "Abre la aplicación de Tableau Public en tu computador. En la esquina superior izquierda, ve a 'Archivo' > 'Abrir' "
+            "Abre la aplicación de Tableau Public en tu computador.\n\n"
+            "En la esquina superior izquierda, ve a '<b>Archivo</b>' > '<b>Abrir</b>' "
             "y selecciona la plantilla que descargaste en el paso 2 (Seguimiento_Deuda.twbx)."
         ),
     },
     {
         "Paso": "5) Actualiza la fuente de datos con tu tabla de amortización",
         "Detalle": (
-            "En la pestaña Seguimiento Deuda, ve a 'Datos' > 'Tabla de Amortización' > 'Editar fuente de datos...' "
-            "y selecciona la tabla de amortización que descargaste en el paso 1. "
-            "Realiza el mismo proceso con 'Pie Chart': ve a 'Datos' > 'Pie Chart' > 'Editar fuente de datos...' "
-            "y selecciona la tabla de amortización que descargaste en el paso 1.\n\n"
-            "Guarda los cambios en 'Archivo' > 'Guardar'.\n\n"
-            "Utiliza el modo presentación para ver el tablero en pantalla completa."
+            "En la pestaña <b>Seguimiento Deuda</b>, realiza los siguientes pasos: \n\n"
+            ".\n\n"
+            "1) Ve a '<b>Datos</b>' > '<b>Tabla de Amortización</b>' > '<b>Editar fuente de datos...</b>' "
+            "y selecciona la tabla de amortización del paso 1.\n\n"
+            "2) Ve a '<b>Datos</b>' > '<b>Pie chart</b>' > '<b>Editar fuente de datos...</b>' "
+            "y selecciona la tabla de amortización del paso 1.\n\n"
+            "3) Guarda los cambios en '<b>Archivo</b>' > '<b>Guardar</b>'.\n\n"
+            "Utiliza el modo presentación (🖥️) para ver el tablero en pantalla completa."
         ),
     },
     {
         "Paso": "Nota:",
         "Detalle": (
-            "El dashboard se encuentra actualizado y está listo para utilizar. "
-            "Si tu deuda cambia, solo genera una nueva tabla en el simulador y actualiza el archivo las veces que necesites: "
-            "ve a la pestaña 'Fuente de Datos' y para cada fuente ('Tabla de Amortización' y 'Pie Chart') despliega el menú de "
-            "opciones en la sección 'Conexiones', da clic en 'Editar Conexión' y selecciona la nueva tabla "
+            "El dashboard se encuentra actualizado y está listo para utilizar.\n\n "
+            "Si tu deuda cambia, solo genera una nueva tabla en el simulador y actualiza el archivo las veces que necesites: \n\n"
+            "Ve a la pestaña '<b>Fuente de Datos</b>' y para cada fuente ('Tabla de Amortización' y 'Pie Chart') despliega el menú de "
+            "opciones en la sección '<b>Conexiones</b>', da clic en '<b>Editar Conexión</b>' y selecciona la nueva tabla "
             "de amortización."
         ),
     },
